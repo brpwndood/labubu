@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Labubu Craze: An Interactive Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Playful Neutral -->
+    <!-- Application Structure Plan: A single-page, vertical "scrollytelling" application. The structure is designed to guide the user through the narrative of the Labubu phenomenon in a linear, story-like fashion. A sticky navigation bar allows for non-linear exploration by jumping to thematic sections. This structure was chosen because the source report is a qualitative narrative, making a story-driven format more effective and usable than a data-heavy dashboard. Key interactions include an image carousel for origins, a clickable "blind box" to simulate the unboxing experience, and a summary chart to visualize the key drivers of the craze. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: Origin Story -> Goal: Inform -> Viz: Image Carousel -> Interaction: Click to cycle images -> Justification: Efficiently shows evolution from illustration to toy.
+        - Report Info: Blind Box Strategy -> Goal: Explain -> Viz: Interactive Card -> Interaction: Click to "unbox" -> Justification: Simulates the core marketing mechanic for better user understanding.
+        - Report Info: Social Media Hype -> Goal: Illustrate -> Viz: Styled HTML Cards -> Interaction: Hover effects -> Justification: Mimics the look and feel of social media to convey the theme of virality.
+        - Report Info: Key Drivers of Craze -> Goal: Summarize -> Viz: Donut Chart (Chart.js) -> Interaction: Tooltips on hover -> Justification: Provides a quick, digestible visual summary of the phenomenon's main components.
+        - Report Info: Timeline -> Goal: Show Change -> Viz: Vertical Timeline (HTML/CSS) -> Interaction: None -> Justification: Clearly presents the key milestones of Labubu's rise.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #2c3e50;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #d63384;
+            border-bottom-color: #d63384;
+        }
+        /* The .hero-section CSS rule has been removed as the corresponding HTML section was removed. */
+        .blind-box {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .blind-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #d63384;
+            border: 3px solid #F8F7F4;
+        }
+        .carousel-item {
+            display: none;
+        }
+        .carousel-item.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <main>
+        <!-- The hero section has been removed -->
+
+        <!-- Section: The Origin -->
+        <section id="origin" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4">The Origin Story</h2>
+                <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">Every phenomenon has a beginning. Labubu started as a whimsical character in an artist's sketchbook before a pivotal partnership launched it into the stratosphere. This section explores the creative mind and the commercial powerhouse that brought Labubu to life.</p>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-3">From Sketch to Star</h3>
+                        <p class="mb-4 text-gray-700">Labubu is a whimsical, elf-like character from "The Monsters" series, created by Hong Kong artist **Kasing Lung** around 2015. Known for its unique "ugly-cute" aesthetic—pointy ears and a mischievous, toothy grin—the character was born from a world of fantasy illustrations.</p>
+                        <h3 class="text-2xl font-bold mb-3">The Pop Mart Connection</h3>
+                        <p class="text-gray-700">The major turning point came when Kasing Lung partnered with **Pop Mart**, a giant in the collectible toy market. Pop Mart transformed Labubu from a 2D character into highly sought-after 3D collectible figures and plush toys, amplifying its reach to a massive, global audience and setting the stage for the craze to come.</p>
+                    </div>
+                    <div class="w-full max-w-md mx-auto">
+                        <div id="image-carousel" class="relative shadow-xl rounded-lg overflow-hidden">
+                            <div class="carousel-item active">
+                                <img src="https://placehold.co/600x600/a5b4fc/312e81?text=Original+Illustration" alt="Original Labubu Illustration" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/e2e8f0/64748b?text=Image+Not+Found';">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="https://placehold.co/600x600/fca5a5/7f1d1d?text=Pop+Mart+Figure" alt="Pop Mart Labubu Figure" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/e2e8f0/64748b?text=Image+Not+Found';">
+                            </div>
+                             <div class="carousel-item">
+                                <img src="https://placehold.co/600x600/93c5fd/1e3a8a?text=Plush+Toy" alt="Labubu Plush Toy" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/e2e8f0/64748b?text=Image+Not+Found';">
+                            </div>
+                        </div>
+                        <div class="flex justify-center mt-4">
+                            <button id="prevBtn" class="bg-gray-700 text-white px-4 py-2 rounded-l-md hover:bg-gray-600">‹</button>
+                            <button id="nextBtn" class="bg-gray-700 text-white px-4 py-2 rounded-r-md hover:bg-gray-600">›</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: The Strategy -->
+        <section id="strategy" class="py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl font-bold mb-4">The "Blind Box" Strategy</h2>
+                <p class="max-w-3xl mx-auto mb-12 text-gray-600">A key driver of the craze is a clever marketing tactic that turns every purchase into a game of chance. This section explains the "blind box" model and how it creates a powerful cycle of excitement and repeat purchases. Click the box below to see what you get!</p>
+                <div id="blind-box-container" class="flex justify-center">
+                    <div class="blind-box w-64 h-64 bg-white rounded-lg shadow-lg flex flex-col items-center justify-center p-4">
+                        <div id="box-front">
+                            <svg class="w-24 h-24 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7l8 4"></path></svg>
+                            <p class="mt-4 font-bold text-xl">?</p>
+                            <p class="text-sm text-gray-500">Click to Unbox!</p>
+                        </div>
+                        <div id="box-reveal" class="hidden text-center">
+                            <img id="reveal-img" src="https://placehold.co/150x150/fde047/854d0e?text=Yay!" class="rounded-full mx-auto" alt="Revealed Labubu">
+                            <p id="reveal-text" class="mt-2 font-bold text-lg">You got the rare one!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: The Explosion -->
+        <section id="explosion" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4">The Viral Explosion</h2>
+                <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">In 2024, Labubu transformed from a popular collectible into a full-blown global phenomenon. This surge was powered by the potent combination of celebrity endorsements and the relentless hype machine of social media, creating a perfect storm of desirability.</p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                        <h3 class="font-bold text-xl mb-2">Celebrity Endorsement</h3>
+                        <p class="text-gray-700">A pivotal moment occurred when **Lisa of BLACKPINK** showcased her extensive Labubu collection. Her influence introduced the character to millions, instantly elevating its status from a niche toy to a must-have cultural item.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                        <h3 class="font-bold text-xl mb-2">Social Media Hype</h3>
+                        <p class="text-gray-700">Platforms like **TikTok and Instagram** became breeding grounds for the craze. Unboxing videos, collection showcases, and creative fan content generated millions of views, fueling a cycle of "fear of missing out" (FOMO).</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                        <h3 class="font-bold text-xl mb-2">Community Building</h3>
+                        <p class="text-gray-700">Online communities formed around the shared passion for collecting. Fans traded tips, shared their finds, and built a global network, strengthening the brand's cultural foothold beyond just a product.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Value & Appeal -->
+        <section id="value" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-4">Value and Appeal</h2>
+                    <p class="max-w-3xl mx-auto mb-12 text-gray-600">What makes Labubu so desirable? It's a mix of genuine emotional connection, its status as a fashion accessory, and the thrill of collecting rare items with high resale value. Here we break down the core drivers of the craze.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">More Than a Toy</h3>
+                         <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-pink-500 font-bold text-xl mr-3">?</span>
+                                <div><strong class="text-gray-800">Collectibility & Resale Value:</strong> Limited editions and collaborations mean rare figures can command thousands of dollars on resale markets, attracting serious collectors.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-pink-500 font-bold text-xl mr-3">?</span>
+                                <div><strong class="text-gray-800">The "Ugly-Cute" Appeal:</strong> The unique "cute but fierce" aesthetic resonates deeply, offering a break from traditionally perfect designs.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-pink-500 font-bold text-xl mr-3">?</span>
+                                <div><strong class="text-gray-800">Self-Expression:</strong> For many, Labubu is a fashion accessory clipped to bags or a whimsical companion, reflecting their personality.</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="chart-container w-full max-w-sm mx-auto h-80 md:h-96">
+                        <canvas id="crazeDriversChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Appeal & Timeline -->
+        <section id="appeal" class="py-20 bg-white">
+             <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">Timeline of a Phenomenon</h2>
+                <div class="relative max-w-2xl mx-auto">
+                    <div class="absolute left-3 top-0 h-full w-0.5 bg-gray-200"></div>
+                    <div class="relative pl-12 mb-8 timeline-item">
+                        <h3 class="font-bold text-xl">2015</h3>
+                        <p class="text-gray-600">Kasing Lung creates "The Monsters" series, introducing the character of Labubu in his illustrated books.</p>
+                    </div>
+                    <div class="relative pl-12 mb-8 timeline-item">
+                        <h3 class="font-bold text-xl">2019</h3>
+                        <p class="text-gray-600">A pivotal partnership with Pop Mart begins, transforming Labubu into collectible toys and making them widely accessible.</p>
+                    </div>
+                    <div class="relative pl-12 timeline-item">
+                        <h3 class="font-bold text-xl">2024</h3>
+                        <p class="text-gray-600">The craze goes global, fueled by celebrity endorsements from figures like Lisa of BLACKPINK and viral social media trends.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Quiz Section -->
+        <section id="quiz" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4">Test Your Labubu Knowledge!</h2>
+                <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">See how much you've learned about the Labubu craze by taking this short quiz.</p>
+
+                <form id="labubuQuiz" class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">1. Who is the original artist behind the Labubu character?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q1" value="A" class="mr-2"> Kasing Lung
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q1" value="B" class="mr-2"> Takashi Murakami
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q1" value="C" class="mr-2"> Yayoi Kusama
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">2. What is the primary marketing strategy that drives the "blind box" craze?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q2" value="A" class="mr-2"> Traditional TV advertising
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q2" value="B" class="mr-2"> The element of surprise and rarity
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q2" value="C" class="mr-2"> Direct sales at conventions only
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">3. Which celebrity is often credited with significantly boosting Labubu's global popularity in 2024?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q3" value="A" class="mr-2"> Beyoncé
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q3" value="B" class="mr-2"> Lisa (BLACKPINK)
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q3" value="C" class="mr-2"> Elon Musk
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">4. In what year was Labubu first introduced in comic books?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q4" value="A" class="mr-2"> 2010
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q4" value="B" class="mr-2"> 2015
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q4" value="C" class="mr-2"> 2020
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">5. What company partnered with Kasing Lung to transform Labubu into collectible figures?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q5" value="A" class="mr-2"> Funko
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q5" value="B" class="mr-2"> Hasbro
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q5" value="C" class="mr-2"> Pop Mart
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">6. What is a common characteristic of Labubu's aesthetic?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q6" value="A" class="mr-2"> Traditionally cute and fluffy
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q6" value="B" class="mr-2"> "Ugly-cute" with mischievous features
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q6" value="C" class="mr-2"> Realistic human-like proportions
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">7. Which social media platforms were crucial in fueling the Labubu craze?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q7" value="A" class="mr-2"> Facebook and Twitter
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q7" value="B" class="mr-2"> LinkedIn and Pinterest
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q7" value="C" class="mr-2"> TikTok and Instagram
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">8. What can rare Labubu figures command on the resale market?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q8" value="A" class="mr-2"> Only their original retail price
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q8" value="B" class="mr-2"> Significantly higher prices, sometimes thousands of dollars
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q8" value="C" class="mr-2"> Slightly discounted prices
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">9. What is one way Labubu is used beyond being just a toy?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q9" value="A" class="mr-2"> As a cooking utensil
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q9" value="B" class="mr-2"> As a fashion accessory (e.g., clipped to bags)
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q9" value="C" class="mr-2"> As a building material
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="font-semibold text-lg mb-4">10. What year did the craze for Labubu go global, fueled by celebrity endorsements?</p>
+                        <div class="space-y-2">
+                            <label class="block">
+                                <input type="radio" name="q10" value="A" class="mr-2"> 2015
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q10" value="B" class="mr-2"> 2019
+                            </label>
+                            <label class="block">
+                                <input type="radio" name="q10" value="C" class="mr-2"> 2024
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="bg-pink-500 text-white px-6 py-3 rounded-md font-bold hover:bg-pink-600 transition duration-300">Submit Quiz</button>
+                </form>
+
+                <div id="quiz-results" class="hidden mt-8 max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg text-center">
+                    <h3 class="text-2xl font-bold mb-4">Quiz Results</h3>
+                    <p id="score-display" class="text-xl mb-4"></p>
+                    <p id="feedback-display" class="text-lg text-gray-700"></p>
+                    <button id="retake-quiz" class="mt-6 bg-gray-700 text-white px-6 py-3 rounded-md font-bold hover:bg-gray-600 transition duration-300">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>An Interactive Report on the Labubu Craze.</p>
+            <p class="text-sm text-gray-400 mt-2">Designed to explore a modern cultural phenomenon.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global error handler to catch any unhandled JavaScript errors
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error("An unhandled JavaScript error occurred:");
+            console.error("Message:", message);
+            console.error("Source:", source);
+            console.error("Line:", lineno);
+            console.error("Column:", colno);
+            console.error("Error object:", error);
+            // Return true to suppress the default browser error handling (e.g., console output)
+            return false;
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Image Carousel
+            const carousel = document.getElementById('image-carousel');
+            const items = carousel.querySelectorAll('.carousel-item');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            let currentIndex = 0;
+
+            function showItem(index) {
+                items.forEach((item, i) => {
+                    item.classList.remove('active');
+                    if (i === index) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % items.length;
+                showItem(currentIndex);
+            });
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + items.length) % items.length;
+                showItem(currentIndex);
+            });
+
+            // Blind Box Interaction
+            const blindBox = document.querySelector('.blind-box');
+            const boxFront = document.getElementById('box-front');
+            const boxReveal = document.getElementById('box-reveal');
+            const revealImg = document.getElementById('reveal-img');
+            const revealText = document.getElementById('reveal-text');
+
+            const reveals = [
+                { text: "Common Cool Cat!", img: "https://placehold.co/150x150/67e8f9/0e7490?text=Cool" },
+                { text: "Uncommon Zesty!", img: "https://placehold.co/150x150/a78bfa/4c1d95?text=Zesty" },
+                { text: "Super Rare Sparkle!", img: "https://placehold.co/150x150/FFD700/8B4513?text=?RARE+LABUBU?" },
+                { text: "Just a regular guy.", img: "https://placehold.co/150x150/d1d5db/1f2937?text=Regular" }
+            ];
+
+            blindBox.addEventListener('click', () => {
+                const randomReveal = reveals[Math.floor(Math.random() * reveals.length)];
+                revealImg.src = randomReveal.img;
+                revealText.textContent = randomReveal.text;
+
+                boxFront.classList.add('hidden');
+                boxReveal.classList.remove('hidden');
+
+                setTimeout(() => {
+                    boxFront.classList.remove('hidden');
+                    boxReveal.classList.add('hidden');
+                }, 2500);
+            });
+
+            // Chart.js Donut Chart
+            const ctx = document.getElementById('crazeDriversChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Blind Box Model', 'Social Media Hype', 'Collector Value', 'Aesthetic Appeal'],
+                    datasets: [{
+                        label: 'Drivers of the Craze',
+                        data: [30, 25, 25, 20],
+                        backgroundColor: [
+                            'rgba(214, 51, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(214, 51, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Quiz Logic
+            const quizForm = document.getElementById('labubuQuiz');
+            const quizResults = document.getElementById('quiz-results');
+            const scoreDisplay = document.getElementById('score-display');
+            const feedbackDisplay = document.getElementById('feedback-display');
+            const retakeQuizBtn = document.getElementById('retake-quiz');
+
+            const correctAnswers = {
+                q1: 'A', // Kasing Lung
+                q2: 'B', // The element of surprise and rarity
+                q3: 'B', // Lisa (BLACKPINK)
+                q4: 'B', // 2015
+                q5: 'C', // Pop Mart
+                q6: 'B', // "Ugly-cute" with mischievous features
+                q7: 'C', // TikTok and Instagram
+                q8: 'B', // Significantly higher prices, sometimes thousands of dollars
+                q9: 'B', // As a fashion accessory (e.g., clipped to bags)
+                q10: 'C' // 2024
+            };
+
+            quizForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                let score = 0;
+                const formData = new FormData(quizForm);
+
+                for (const [question, correctAnswer] of Object.entries(correctAnswers)) {
+                    if (formData.get(question) === correctAnswer) {
+                        score++;
+                    }
+                }
+
+                scoreDisplay.textContent = ` ${score} Correct , out of ${Object.keys(correctAnswers).length}`;
+                if (score === Object.keys(correctAnswers).length) {
+                    feedbackDisplay.textContent = "???!?? Labubu ??!";
+                    feedbackDisplay.classList.remove('text-red-700');
+                    feedbackDisplay.classList.add('text-green-700');
+                } else if (score > 0) {
+                    feedbackDisplay.textContent = "Nice Try Bruh!";
+                    feedbackDisplay.classList.remove('text-green-700');
+                    feedbackDisplay.classList.add('text-red-700');
+                } else {
+                    feedbackDisplay.textContent = "Try Again ?";
+                    feedbackDisplay.classList.remove('text-green-700');
+                    feedbackDisplay.classList.add('text-red-700');
+                }
+
+                quizForm.classList.add('hidden');
+                quizResults.classList.remove('hidden');
+            });
+
+            retakeQuizBtn.addEventListener('click', () => {
+                quizForm.reset();
+                quizResults.classList.add('hidden');
+                quizForm.classList.remove('hidden');
+                feedbackDisplay.classList.remove('text-green-700', 'text-red-700');
+            });
+        });
+    </script>
+</body>
+</html>
